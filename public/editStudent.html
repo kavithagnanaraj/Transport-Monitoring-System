@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manage Students</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background: #eef2f7;
+}
+
+.header {
+position: relative;
+background: #007bff;
+color: white;
+padding: 14px;
+text-align: center;
+font-size: 16px;
+font-weight: 600;
+}
+
+.back-btn {
+position: absolute;
+left: 15px;
+top: 50%;
+transform: translateY(-50%);
+background:#555;;
+color: white;
+border: none;
+padding: 5px 10px;
+border-radius: 6px;
+font-size: 13px;
+cursor: pointer;
+font-weight: 600;
+}
+
+.back-btn:hover {
+ background:#333;
+}
+
+.container {
+max-width: 700px;
+margin: auto;
+padding: 15px;
+}
+
+.search-box {
+display: flex;
+gap: 8px;
+background: white;
+padding: 10px;
+border-radius: 10px;
+margin-bottom: 15px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+flex-wrap: wrap;
+}
+
+.search-box input {
+flex: 1;
+min-width: 150px; 
+padding: 8px;
+border-radius: 6px;
+border: 1px solid #ccc;
+}
+select {
+width: 89%;
+padding: 8px;
+border-radius: 6px;
+border: 1px solid #ccc;
+}
+
+.search-btn {
+background: #007bff;
+color: white;
+border: none;
+padding: 8px 12px;
+border-radius: 6px;
+cursor: pointer;
+white-space: nowrap;
+}
+
+.search-btn:hover {
+background: #0056b3;
+}
+
+.student-card {
+background: white;
+padding: 10px;
+margin-bottom: 8px;
+border-radius: 10px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+flex-wrap: wrap;   
+gap: 8px;
+}
+.name {
+font-size: 14px;
+font-weight: 600;
+}
+
+.details {
+font-size: 12px;
+color: #666;
+}
+
+.actions {
+display: flex;
+gap: 5px;
+}
+.actions button {
+margin-left: 5px;
+font-size: 12px;
+padding: 5px 8px;
+border-radius: 5px;
+border: none;
+cursor: pointer;
+}
+.edit-btn {
+background: #28a745;
+color: white;
+}
+
+.edit-btn:hover {
+background: #1e7e34;
+}
+
+.delete-btn {
+background: #dc3545;
+color: white;
+}
+
+.delete-btn:hover {
+background: #b02a37;
+}
+
+.form-box {
+background: white;
+padding: 12px;
+border-radius: 10px;
+margin-top: 15px;
+display: none;
+}
+
+.form-box input {
+width: 98%;
+padding: 8px;
+margin-bottom: 8px;
+border-radius: 6px;
+border: 1px solid #ccc;
+}
+
+.update-btn {
+background: #28a745;
+color: white;
+width: 100%;
+padding: 10px;
+border-radius: 6px;
+border: none;
+cursor: pointer;
+}
+
+@media(max-width:600px){
+
+.container {
+padding: 10px;
+}
+
+.search-box {
+flex-direction: column;
+}
+
+.search-btn {
+width: 100%;
+}
+
+.student-card {
+flex-direction: column;
+align-items: flex-start;
+}
+
+.actions {
+width: 100%;
+justify-content: space-between;
+}
+
+.actions button {
+flex: 1;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<button onclick="goBack()" class="back-btn">⬅ Back</button>
+Manage Students
+</div>
+
+<div class="container">
+
+<div class="search-box">
+    <select id="editRoute">
+        <option value="">Select Route</option>
+        <option value="Kayalpatnam">Kayalpatnam</option>
+        <option value="Sawyerpuram">Sawyerpuram</option>
+        <option value="Udangudi">Udangudi</option>
+        <option value="Navaladi">Navaladi</option>
+        <option value="Ittamozhi">Ittamozhi</option>
+        <option value="Tirunelveli">Tirunelveli</option>
+        <option value="Patemanagram">Patemanagram</option>
+        <option value="Spic Route - Thoothukudi">Spic Route - Thoothukudi</option>
+        <option value="Thoothukudi">Thoothukudi</option>
+    </select>
+<button class="search-btn" onclick="loadStudents()">Search</button>
+</div>
+
+<div id="list"></div>
+
+<div class="form-box" id="formBox">
+<h3>Edit Student</h3>
+
+<input type="hidden" id="studentId">
+
+<input type="text" id="name" placeholder="Student Name">
+<input type="text" id="year" placeholder="Year">
+<input type="text" id="stop" placeholder="Stop">
+
+<button class="update-btn" onclick="updateStudent()">Update</button>
+</div>
+
+</div>
+
+<script>
+
+let studentsData = [];
+
+/* BACK */
+function goBack(){
+if(document.referrer){
+window.location.href = document.referrer;
+} else {
+const role = sessionStorage.getItem("role");
+if(role === "admin"){
+window.location.href = "admin.html";
+} else {
+window.location.href = "staff.html";
+}
+}
+}
+
+
+async function loadStudents(){
+
+const route = document.getElementById("editRoute").value;
+
+if(!route){
+alert("Select Route");
+return;
+}
+const res = await fetch(`http://localhost:4000/getStudentsByRoute?route=${route}`);
+const data = await res.json();
+studentsData = data;
+let html = "";
+data.forEach(s => {
+html += `
+<div class="student-card">
+<div>
+<div class="name">${s.name}</div>
+<div class="details">${s.stop_name} • ${s.year} • ${s.route_name}</div>
+</div>
+<div class="actions">
+<button class="edit-btn" onclick="editStudent(${s.id})">Edit</button>
+<button class="delete-btn" onclick="deleteStudent(${s.id})">Delete</button>
+</div>
+</div>
+`;
+});
+
+document.getElementById("list").innerHTML = html;
+
+}
+
+function editStudent(id){
+const student = studentsData.find(s => s.id === id);
+
+document.getElementById("formBox").style.display = "block";
+document.getElementById("editRoute").value = student.route_name;
+
+document.getElementById("studentId").value = student.id;
+document.getElementById("name").value = student.name;
+document.getElementById("year").value = student.year;
+document.getElementById("editRoute").value = student.route_name;
+document.getElementById("stop").value = student.stop_name;
+
+document.getElementById("formBox").scrollIntoView({ behavior: "smooth" });
+}
+
+/* UPDATE */
+async function updateStudent(){
+
+const id = document.getElementById("studentId").value;
+const name = document.getElementById("name").value;
+const year = document.getElementById("year").value;
+const stop = document.getElementById("stop").value;
+
+if(!name || !year || !stop){
+alert("Fill all fields");
+return;
+}
+
+await fetch("http://localhost:4000/updateStudent", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ id, name, year, stop, route_name: route })
+});
+
+alert("Updated Successfully");
+loadStudents();
+document.getElementById("formBox").style.display = "none";
+}
+
+/* DELETE */
+async function deleteStudent(id){
+
+if(!confirm("Delete this student?")) return;
+
+await fetch(`http://localhost:4000/deleteStudent?id=${id}`);
+
+alert("Deleted");
+loadStudents();
+
+}
+
+</script>
+
+</body>
+</html>

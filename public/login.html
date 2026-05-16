@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bus Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),url("bus.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+@media (max-width: 768px) {
+    body { background-attachment: scroll; }
+}
+.container {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 35px;              
+    width: 90%;
+    max-width: 350px;          
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    color: #fff;
+    backdrop-filter: blur(10px);
+}
+.title-section {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.title-section h2 {
+    margin: 5px 0; 
+}
+.title-section h3 { 
+    margin: 0; color: #ddd; 
+}
+.input-box { 
+    margin-bottom: 18px; 
+}
+.input-box label {
+    font-size: 14px;
+}
+.input-box input {
+    width: 90%;
+    padding: 10px 35px 10px 10px;   
+    margin-top: 5px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    font-size: 14px;
+}
+.password-wrapper {
+    position: relative;
+}
+.toggle-eye {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+}
+button {
+    width: 102%;
+    padding: 10px;     
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.login-btn {
+    background: #007bff;
+    color: white;
+}
+button:active {
+    transform: scale(0.97);
+}
+@media (max-width: 480px) {
+    .container { padding: 25px; }
+    .title-section h2 { font-size: 20px; }
+    .title-section h3 { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="title-section">
+        <h2>Bus Login</h2>
+        <h3>Transport Monitoring System</h3>
+    </div>
+    <div class="input-box">
+        <label>Username</label>
+        <input type="text" id="username">
+    </div>
+    <div class="input-box">
+        <label>Password</label>
+        <div class="password-wrapper">
+            <input type="password" id="password">
+            <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword()" id="eyeIcon"></i>
+        </div>
+    </div>
+    <button class="login-btn" onclick="login()">Login</button>
+</div>
+<script>
+window.onload = () => {
+    username.value = "";
+    password.value = "";
+};
+function togglePassword(){
+    const p = password;
+    const icon = document.getElementById("eyeIcon");
+    if(p.type === "password"){
+        p.type = "text";
+        icon.classList.replace("fa-eye","fa-eye-slash");
+    } else {
+        p.type = "password";
+        icon.classList.replace("fa-eye-slash","fa-eye");
+    }
+}
+async function login(){
+    if(!username.value || !password.value){
+        alert("Please enter username and password");
+        return;
+    }
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: username.value,
+            password: password.value
+        })
+    });
+    const data = await res.json();
+    if(data.message === "Login Success"){
+        window.location.replace(
+            data.role === "admin" ? "admin.html" : "staff.html"
+        );
+    } else {
+        alert(data.message);
+    }
+}
+</script>
+</body>
+</html>

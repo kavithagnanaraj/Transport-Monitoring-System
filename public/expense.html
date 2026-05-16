@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bus Expense Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e3f2fd;
+      margin: 0;
+      padding: 20px 0;
+    }
+    .back-btn{
+      display: inline-block;
+      margin-left: 20px;
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      font-size: 14px;
+      background: #444;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .back-btn:hover{
+      background: #222;
+    }
+    .container {
+      width: 85%;
+      max-width: 450px;
+      margin: 0 auto 30px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      margin: 5px 0 20px 0;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+    button:hover {
+      background-color: #0d47a1;
+    }
+    td button {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-right: 5px;
+    }
+    .edit-btn { background-color: #28a745; }
+    .delete-btn { background-color: #dc3545; }
+    .edit-btn:hover { background-color: #1e7e34; }
+    .delete-btn:hover { background-color: #b02a37; }
+    #repairFields, #fuelFields { display: none; }
+    .table-container {
+      width: 92%;
+      max-width: 1000px;
+      margin: 0 auto 30px auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th {
+      background-color: #1976d2;
+      color: white;
+      padding: 12px;
+      text-align: center;
+    }
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    @media(max-width:768px){
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr { display: none; }
+      tbody tr {
+        margin-bottom: 15px;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      td {
+        text-align: left;
+        padding: 8px 0;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      td button { margin: 0 5px 0 0; }
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        flex: 1;
+      }
+      td:last-child {
+        justify-content: flex-start;
+        gap: 5px;
+      }
+    }
+    </style>
+  </head>
+  <body>
+    <a onclick="goBack()" class="back-btn">⬅ Back</a>
+    <div class="container">
+      <h2>Add Bus Expense</h2>
+      <form id="expenseForm">
+        <input type="text" id="bus_number" placeholder="Bus Number" onblur="autoFillRegNo()" required>
+        <select id="registration_number" required>
+          <option value="">Select Registration Number</option>
+          <option>TN69U2799</option>
+          <option>TN69U3099</option>
+          <option>TN69U9499</option>
+          <option>TN69S2199</option>
+          <option>TN69AY3399</option>
+          <option>TN69AR3199</option>
+          <option>TN69AT7399</option>
+          <option>TN69AR3399</option>
+          <option>TN69AR3099</option>
+          <option>TN69AR3299</option>
+          <option>TN69AY9399</option>
+          <option>TN69C7899</option>
+          <option>TCT1299</option>
+          <option>TN69AY3799</option>
+          <option>TN69AW8199</option>
+          <option>TN925499</option>
+        </select>
+        <input type="date" id="expense_date" required>
+        <select id="expense_type" onchange="toggleFields()" required>
+          <option value="">Select Expense Type</option>
+          <option value="Repair">Repair</option>
+          <option value="Fuel">Fuel</option>
+        </select>
+        <div id="repairFields">
+          <input type="number" id="labour_cost" placeholder="Labour Cost">
+          <input type="text" id="spare_parts" placeholder="Spare Parts">
+          <input type="number" id="spare_parts_cost" placeholder="Spare Parts Cost">
+        </div>
+        <div id="fuelFields">
+          <select id="fuel_type">
+            <option value="">Select Fuel Type</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Petrol">Petrol</option>
+            <option value="Other">Others</option>
+          </select>
+          <input type="number" id="fuel_quantity" placeholder="Fuel Quantity (Litres)" oninput="calculateFuelTotal()">
+          <input type="text" id="fuel_price_per_litre" onblur="saveFuelPrice()" oninput="calculateFuelTotal()">
+          <input type="text" id="fuel_cost" placeholder="Total Fuel Cost" readonly>
+        </div>
+        <button type="submit" id="submitBtn">Add Expense</button>
+        <button type="button" onclick="downloadReport()">Download Expense Report</button>
+      </form>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Bus No</th>
+            <th>Reg No</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Fuel Type</th>
+            <th>Total Cost</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="expenseTableBody"></tbody>
+      </table>
+    </div>
+    <script>
+    let editId = null;
+    function toggleFields() {
+      const type = document.getElementById("expense_type").value;
+      document.getElementById("repairFields").style.display = type==="Repair"?"block":"none";
+      document.getElementById("fuelFields").style.display = type==="Fuel"?"block":"none";
+    }
+    async function autoFillRegNo() {
+      const busNo = document.getElementById("bus_number").value;
+      if(!busNo) return;
+      const res = await fetch(`http://localhost:4000/getBusByNumber/${busNo}`);
+      const data = await res.json();
+      if(data && data.registration_number){
+        document.getElementById("registration_number").value=data.registration_number;
+      } else {
+        alert("Bus Number not found");
+        document.getElementById("bus_number").value="";
+        document.getElementById("registration_number").value="";
+      }
+    }
+    function calculateFuelTotal() {
+      const qty = parseFloat(document.getElementById("fuel_quantity").value) || 0;
+      const price = parseFloat(document.getElementById("fuel_price_per_litre").value) || 0;
+      document.getElementById("fuel_cost").value = qty * price;
+    }
+    function saveFuelPrice(){
+      const fuelType = document.getElementById("fuel_type").value;
+      const price = document.getElementById("fuel_price_per_litre").value;
+      if(fuelType && price){
+        localStorage.setItem(fuelType+"_price", price);
+      }
+    }
+    document.getElementById("fuel_type").addEventListener("change", function(){
+      const savedPrice = localStorage.getItem(this.value+"_price");
+      document.getElementById("fuel_price_per_litre").value = savedPrice || "";
+    });
+    document.getElementById("expenseForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const data={
+        bus_number:document.getElementById("bus_number").value,
+        registration_number:document.getElementById("registration_number").value,
+        expense_date:document.getElementById("expense_date").value,
+        expense_type:document.getElementById("expense_type").value,
+        fuel_type:document.getElementById("fuel_type").value,
+        labour_cost:document.getElementById("labour_cost").value,
+        spare_parts:document.getElementById("spare_parts").value,
+        spare_parts_cost:document.getElementById("spare_parts_cost").value,
+        fuel_quantity:document.getElementById("fuel_quantity").value,
+        fuel_price_per_litre:document.getElementById("fuel_price_per_litre").value,
+        fuel_cost:document.getElementById("fuel_cost").value
+      };
+      if(editId===null){
+        await fetch("http://localhost:4000/addExpense",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(data)
+        });
+        alert("Expense Added Successfully");
+      } else {
+        await fetch(`http://localhost:4000/updateExpense/${editId}`,{
+          method:"PUT",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(data)
+        });
+        alert("Expense Updated Successfully");
+        editId=null;
+        document.getElementById("submitBtn").textContent="Add Expense";
+      }
+      document.getElementById("expenseForm").reset();
+      toggleFields();
+      loadExpenses();
+    });
+    async function loadExpenses() {
+      const res=await fetch("http://localhost:4000/getExpenses");
+      const data=await res.json();
+      const table=document.getElementById("expenseTableBody");
+      table.innerHTML="";
+      data.forEach(exp=>{
+        const row=document.createElement("tr");
+        row.innerHTML=`
+          <td data-label="Bus No">${exp.bus_number}</td>
+          <td data-label="Reg No">${exp.registration_number}</td>
+          <td data-label="Date">${exp.expense_date}</td>
+          <td data-label="Type">${exp.expense_type}</td>
+          <td data-label="Fuel Type">${exp.fuel_type||"-"}</td>
+          <td data-label="Total Cost">₹ ${exp.total_cost}</td>
+          <td data-label="Action">
+            <button class="edit-btn" onclick="editExpense(${exp.id})">Edit</button>
+            <button class="delete-btn" onclick="deleteExpense(${exp.id})">Delete</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+    async function editExpense(id){
+      const res=await fetch("http://localhost:4000/getExpenses");
+      const data=await res.json();
+      const expense=data.find(e=>e.id===id);
+      if(!expense) return;
+      editId=id;
+      document.getElementById("bus_number").value=expense.bus_number;
+      document.getElementById("registration_number").value=expense.registration_number;
+      document.getElementById("expense_date").value=expense.expense_date;
+      document.getElementById("expense_type").value=expense.expense_type;
+      toggleFields();
+      document.getElementById("labour_cost").value=expense.labour_cost||"";
+      document.getElementById("spare_parts").value=expense.spare_parts||"";
+      document.getElementById("spare_parts_cost").value=expense.spare_parts_cost||"";
+      document.getElementById("fuel_quantity").value=expense.fuel_quantity||"";
+      document.getElementById("fuel_price_per_litre").value=expense.fuel_price_per_litre||"";
+      document.getElementById("fuel_cost").value=expense.fuel_cost||"";
+      document.getElementById("submitBtn").textContent="Update Expense";
+    }
+    async function deleteExpense(id){
+      if(!confirm("Are you sure?")) return;
+      await fetch(`http://localhost:4000/deleteExpense/${id}`,{method:"DELETE"});
+      alert("Deleted Successfully");
+      loadExpenses();
+    }
+    window.onload=function(){
+      loadExpenses();
+    }
+    function goBack(){
+      window.location.href="admin.html";
+    }
+    </script>
+  </body>
+</html>

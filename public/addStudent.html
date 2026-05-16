@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Student</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+margin: 0;
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, #667eea, #764ba2);
+min-height: 100vh;
+display: flex;
+justify-content: center;   
+align-items: center;       
+padding: 15px;
+}
+
+.container {
+width: 100%;
+max-width: 450px;
+margin: auto; 
+background: #ffffff;
+padding: 30px;
+border-radius: 15px;
+box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+h2 {
+text-align: center;
+margin-bottom: 25px;
+color: #333;
+}
+
+.input-group {
+margin-bottom: 18px;
+}
+
+label {
+display: block;
+margin-bottom: 6px;
+font-size: 13px;
+color: #555;
+}
+
+input, select {
+width: 100%;
+padding: 12px;
+border-radius: 8px;
+border: 1px solid #ccc;
+font-size: 14px;
+box-sizing: border-box;
+}
+
+button {
+width: 100%;
+padding: 12px;
+border: none;
+border-radius: 8px;
+background: #28a745;
+color: white;
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+}
+
+button:hover {
+background: #218838;
+}
+
+.success {
+text-align: center;
+color: green;
+margin-top: 10px;
+}
+
+.back-btn{
+position: fixed;
+top: 15px;
+left: 15px;
+padding: 4px 6px;
+font-size: 15px;
+background: #444;
+color: white;
+border-radius: 5px;
+width: auto;
+z-index: 1000;
+}
+
+.back-btn:hover{
+background: #222;
+}
+
+@media(max-width:600px){
+
+.container {
+padding: 18px;
+border-radius: 12px;
+}
+
+h2 {
+font-size: 18px;
+}
+
+input, select {
+padding: 9px;
+font-size: 13px;
+}
+
+button {
+font-size: 14px;
+}
+
+.back-btn{
+font-size: 13px;
+padding: 5px 8px;
+}
+
+}
+</style>
+
+</head>
+
+<body>
+
+<button onclick="goBack()" class="back-btn">⬅ Back</button>
+
+<div class="container">
+
+<h2>➕ Add Student</h2>
+
+<div class="input-group">
+<label>Student Name</label>
+<input type="text" id="name">
+</div>
+
+<div class="input-group">
+    <label>Route</label>
+    <select id="route">
+        <option value="">Select Route</option>
+        <option value="Kayalpatnam">Kayalpatnam</option>
+        <option value="Sawyerpuram">Sawyerpuram</option>
+        <option value="Udangudi">Udangudi</option>
+        <option value="Navaladi">Navaladi</option>
+        <option value="Ittamozhi">Ittamozhi</option>
+        <option value="Tirunelveli">Tirunelveli</option>
+        <option value="Patemanagram">Patemanagram</option>
+        <option value="Spic Route - Thoothukudi">Spic Route - Thoothukudi</option>
+        <option value="Thoothukudi">Thoothukudi</option>
+    </select>
+</div>
+
+<div class="input-group">
+<label>Stop Name</label>
+<select id="stop" disabled>
+<option>Enter Route First</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Year</label>
+<input type="text" id="year">
+</div>
+
+<div class="input-group">
+<label>7.5 Reservation</label>
+<select id="reservation">
+<option value="">Select</option>
+<option value="Yes">7.5</option>
+<option value="No">-</option>
+</select>
+</div>
+
+<button onclick="addStudent()">Add Student</button>
+
+<div class="success" id="msg"></div>
+
+</div>
+
+<script>
+document.getElementById("route").addEventListener("change", async function () {
+
+const route = this.value;
+const stopDropdown = document.getElementById("stop");
+
+// Reset
+if(!route){
+stopDropdown.innerHTML = `<option>Select Route First</option>`;
+stopDropdown.disabled = true;
+return;
+}
+
+try {
+const res = await fetch(`http://localhost:4000/getStops/${route}`);
+const data = await res.json();
+
+stopDropdown.innerHTML = `<option value="">Select Stop</option>`;
+
+if(data.length > 0){
+stopDropdown.disabled = false;
+
+data.forEach(function(item){
+const option = document.createElement("option");
+option.value = item.stop_name;
+option.textContent = item.stop_name;
+stopDropdown.appendChild(option);
+});
+} else {
+stopDropdown.innerHTML = `<option>No stops found</option>`;
+stopDropdown.disabled = true;
+}
+} 
+catch (err) {
+console.log(err);
+}
+});
+
+async function addStudent(){
+
+const name = document.getElementById("name").value;
+const bus = document.getElementById("bus").value;
+const stop = document.getElementById("stop").value;
+const year = document.getElementById("year").value;
+const reservation = document.getElementById("reservation").value;
+
+if(!name || !bus || !stop || !year || !reservation){
+alert("Please fill all fields ⚠️");
+return;
+}
+
+await fetch("http://localhost:4000/addStudent", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+name,
+bus_number: bus,
+stop_name: stop,
+year,
+reservation
+})
+});
+
+document.getElementById("msg").innerText = "Student Added Successfully ✅";
+
+// Reset form
+document.getElementById("name").value = "";
+document.getElementById("bus").value = "";
+document.getElementById("stop").innerHTML = `<option>Enter Bus Number First</option>`;
+document.getElementById("stop").disabled = true;
+document.getElementById("year").value = "";
+document.getElementById("reservation").value = "";
+}
+
+
+// ✅ BACK BUTTON (ROLE BASED)
+function goBack(){
+
+if(document.referrer){
+ window.location.href = document.referrer;
+} else {
+ const role = sessionStorage.getItem("role");
+
+ if(role === "admin"){
+ window.location.href = "admin.html";
+ } else {
+ window.location.href = "staff.html";
+ }
+}
+
+}
+
+</script>
+
+</body>
+</html>

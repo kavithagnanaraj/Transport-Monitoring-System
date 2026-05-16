@@ -1,0 +1,126 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #e3f2fd;
+    margin: 0;
+    padding: 0;
+}
+.back-btn {
+    display: inline-block;
+    margin: 0 0 10px 0; 
+    padding: 6px 12px;
+    font-size: 13px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+.container {
+    max-width: 1200px;
+    margin: 0px auto; 
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+.container h2 {
+    text-align: center;
+    color: #1976d2;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+.grid div {
+    display: flex;
+    flex-direction: column;
+}
+.grid label {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #0d47a1;
+}
+input, select {
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+button {
+    margin-top: 10px;
+    padding: 7px 12px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px 5px;
+    text-align: center;
+    font-size: 13px;
+}
+th {
+    background: #1976d2;
+    color: white;
+}
+td:last-child {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+td:last-child button {
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    min-width: 55px;
+}
+.btn-edit {
+    background: #388e3c;
+}
+.btn-delete {
+    background: #d32f2f;
+}
+@media(max-width:768px){
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr { 
+      display: none; 
+    }
+    tbody tr {
+      margin-bottom: 15px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    td {
+      text-align: left;
+      padding: 8px 0;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;   
+    }
+    td:before {
+      content: attr(data-label);
+      font-weight: bold;
+    }
+    td[data-label="Action"] {
+        display: flex;
+        align-items: center;
+    }  
+    td[data-label="Action"]::after {
+        content: "";
+        flex: 1;
+    } 
+    td[data-label="Action"] button {
+        margin-left: 6px;
+    }
+}

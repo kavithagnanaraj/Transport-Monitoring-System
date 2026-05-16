@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Monthly Report</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f2f2f2;
+            margin:0;
+            padding:15px;
+        }
+        .header{
+            display:flex;
+            align-items:center;
+            margin-bottom:10px;
+        }
+        .back-btn{
+            background:#555;
+            color:white;
+            border:none;
+            padding:5px 10px;
+            font-size:12px;
+            border-radius:5px;
+            cursor:pointer;
+            width:auto;
+        }
+        .back-btn:hover{
+            background:#333;
+        }
+        h1{
+            text-align:center;
+            font-size:22px;
+            margin-bottom:20px;
+        }
+        .controls{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        input, .controls button{
+            padding:12px;
+            font-size:14px;
+            border-radius:6px;
+            border:1px solid #ccc;
+            width:100%;
+            box-sizing:border-box;
+        }
+        .generate{
+            background:#1976d2;
+            color:white;
+            border:none;
+        }
+        .download{
+            background:#28a745;
+            color:white;
+            border:none;
+        }
+        .table-container{
+            margin-top:20px;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+        }
+        th{
+            background:#1976d2;
+            color:white;
+            padding:10px;
+            font-size:14px;
+        }
+        td{
+            padding:10px;
+            text-align:center;
+            border-bottom:1px solid #ddd;
+            font-size:13px;
+        }
+        @media(max-width:600px){
+            h1{
+                font-size:20px;
+            }
+            th, td{
+                font-size:11px;
+                padding:6px;
+            }
+        }
+        @media(min-width:768px){
+            .controls{
+                flex-direction:row;
+                justify-content:center;
+            }
+            input{
+                width:200px;
+            }
+            .controls button{
+                width:auto;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <button onclick="goBack()" class="back-btn">⬅ Back</button>
+        </div>
+        <h1>Monthly Report</h1>
+        <div class="controls">
+            <input type="text" id="bus_no" placeholder="Bus Number">
+            <input type="month" id="month">
+            <button class="generate" onclick="generateReport()">Generate Report</button>
+            <button class="download" onclick="downloadPDF()">Download PDF</button>
+        </div>
+        <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bus No</th>
+                    <th>Month</th>
+                    <th>Total Amount</th>
+                </tr>
+            </thead>
+            <tbody id="reportBody"></tbody>
+        </table>
+        </div>
+        <script>
+        let reportData=[];
+        async function generateReport(){
+            const bus=document.getElementById("bus_no").value;
+            const month=document.getElementById("month").value;
+            if(!bus || !month){
+                alert("Please enter Bus Number and Month");
+                return;
+            }
+            try{
+                const res=await fetch(`http://localhost:4000/monthlyReport?bus=${bus}&month=${month}`);
+                const data=await res.json();
+                reportData=data;
+                const table=document.getElementById("reportBody");
+                table.innerHTML="";
+                data.forEach((r)=>{
+                    table.innerHTML+=`
+                    <tr>
+                        <td>${r.bus_number}</td>
+                        <td>${r.month}</td>
+                        <td>${r.total}</td>
+                    </tr>
+                    `;
+                });
+            }catch(err){
+                console.error(err);
+                alert("Error fetching report data");
+            }
+        }
+        function downloadPDF(){
+            const bus=document.getElementById("bus_no").value;
+            const month=document.getElementById("month").value;
+            if(!bus || !month){
+                alert("Please select Bus Number and Month");
+                return;
+            }
+            window.open(`http://localhost:4000/downloadMonthlyPDF?bus=${bus}&month=${month}`);
+        }
+        function goBack(){
+            window.location.href = "admin.html";
+        }
+        </script>
+    </body>
+</html>

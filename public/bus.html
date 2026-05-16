@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>College Bus Management</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="bus.css"></link>
+    </head>
+    <body>
+        <button onclick="goBack()" class="back-btn">⬅ Back</button>
+        <div class="container" id="formSection">
+            <h2>Bus Details Entry</h2>
+            <div class="grid">
+                <div>
+                    <label>Bus Number</label>
+                    <input id="bus_number" placeholder="Enter Bus Number">
+                </div>
+                <div>
+                    <label>Registration Number</label>
+                    <select id="registration_number"> 
+                        <option value="">Select Registration Number</option>
+                        <option>TN69U2799</option> 
+                        <option>TN69U3099</option>
+                        <option>TN69U9499</option> 
+                        <option>TN69S2199</option> 
+                        <option>TN69AY3399</option> 
+                        <option>TN69AR3199</option> 
+                        <option>TN69AT7399</option> 
+                        <option>TN69AR3399</option> 
+                        <option>TN69AR3099</option> 
+                        <option>TN69AR3299</option> 
+                        <option>TN69AY9399</option> 
+                        <option>TN69C7899</option> 
+                        <option>TCT1299</option> 
+                        <option>TN69AY3799</option> 
+                        <option>TN69AW8199</option> 
+                        <option>TN925499</option> 
+                    </select>
+                </div>
+                <div>
+                    <label>Date of Purchase</label>
+                    <input type="date" id="purchase_date">
+                </div>
+                <div>
+                    <label>Cost of Vehicle</label>
+                    <input id="vehicle_cost" placeholder="Enter cost">
+                </div>
+                <div>
+                    <label>Vehicle Make</label>
+                    <select id="vehicle_make"> 
+                        <option value="">Select Vehicle Make</option> 
+                        <option>ASHOK LEYLAND</option> 
+                        <option>TATA</option> 
+                        <option>TVS XL</option> 
+                        <option>AUTO</option> 
+                    </select>
+                </div>
+                <div>
+                    <label>Vehicle Capacity</label>
+                    <input type="number" id="vehicle_capacity" placeholder="Capacity">
+                </div>
+                <div>
+                    <label>Insurance Date</label>
+                    <input type="date" id="insurance_date">
+                </div>
+                <div>
+                    <label>FC Date</label>
+                    <input type="date" id="fc_date">
+                </div>
+                <div>
+                    <label>Taxation Paid Upto</label>
+                    <input type="date" id="taxation_paid_upto">
+                </div>
+                <div>
+                    <label>Permit Validity</label>
+                    <input type="date" id="permit_validity">
+                </div>
+                <div>
+                    <label>Pollution Certificate</label>
+                    <input type="date" id="pollution_date">
+                </div>
+            </div>
+            <div>
+                <button onclick="addBus()">Save</button>
+                <button onclick="downloadPDF()">Download PDF</button>
+                <button onclick="checkExpiry()">Check Expiry</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bus</th>
+                        <th>Reg</th>
+                        <th>Purchase</th>
+                        <th>Cost</th>
+                        <th>Make</th>
+                        <th>Cap</th>
+                        <th>Insurance</th>
+                        <th>FC</th>
+                        <th>Tax</th>
+                        <th>Permit</th>
+                        <th>Pollution</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        <script src="bus.js"></script>
+    </body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bus Management</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+
+body {
+margin: 0;
+font-family: 'Segoe UI';
+background: #eef2f7;
+}
+
+.header {
+background: linear-gradient(135deg, #007bff, #00c6ff);
+color: white;
+padding: 12px 15px;
+display: flex;
+align-items: center;
+gap: 12px;
+font-weight: bold;
+font-size: 16px;
+}
+
+/* MENU ICON */
+.menu-icon {
+font-size: 20px;
+cursor: pointer;
+}
+.sidebar {
+position: fixed;
+top: 0;
+left: -100%;              
+width: 75%;               
+max-width: 260px;         
+height: 100%;
+background: #222;
+color: white;
+padding-top: 20px;
+transition: 0.3s;
+z-index: 2000;
+}
+
+.sidebar a {
+display: block;
+padding: 12px;
+color: white;
+text-decoration: none;
+}
+
+.sidebar a:hover {
+background: #444;
+}
+
+.sidebar-header {
+padding: 15px;
+background: #111;
+font-weight: bold;
+text-align: center;
+letter-spacing: 1px;
+}
+
+.back-item {
+margin:0;   
+padding: 5px 8px;
+}
+
+.sidebar .back-item {
+margin-top: 5px;
+}
+
+.container {
+max-width: 750px;
+margin: 20px auto;
+padding: 15px;
+}
+
+.search-box {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr auto;
+gap: 10px;
+background: white;
+padding: 12px;
+border-radius: 10px;
+box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+align-items: center;
+}
+
+.search-box input, 
+.search-box select { 
+    padding: 7px; 
+    border-radius: 6px; 
+    border: 1px solid #ccc; 
+    font-size: 13px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.search-btn {
+padding: 7px 10px;
+background: #007bff;
+color: white;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+}
+
+.student-card {
+background: white;
+padding: 10px 12px;
+margin-top: 8px;
+border-radius: 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.student-info {
+font-size: 14px;
+}
+
+.student-info small {
+font-size: 12px;
+color: #666;
+}
+.student-actions {
+display: flex;
+gap: 5px;
+}
+
+.status-btn {
+padding: 4px 8px;
+font-size: 12px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+.present-btn { background: #28a745; color: white; }
+.absent-btn { background: #dc3545; color: white; }
+
+.dim { opacity: 0.3; }
+
+.submit-btn {
+display: none;
+margin-top: 15px;
+float: none;
+width: 100%;
+background: #28a745; 
+color: white;
+padding: 8px 14px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+}
+
+.filter-box {
+display: flex;
+gap: 10px;
+margin-top: 15px;
+}
+
+.filter-btn {
+flex: 1;
+padding: 8px;
+border: none;
+border-radius: 6px;
+color: white;
+cursor: pointer;
+}
+
+.box {
+background: white;
+padding: 12px;
+border-radius: 8px;
+margin-top: 10px;
+}
+
+.student {
+padding: 10px;
+border-bottom: 1px solid #eee;
+font-size: 16px;
+line-height: 1.5;
+}
+.student b {
+font-size: 14px;
+}
+
+.student small {
+font-size: 14px;
+color: #555;
+}
+.stop-select {
+    height: 35px;          /* increase height */
+    width: 100%;
+    font-size: 16px;
+    padding: 10px 12px;    /* left-right space */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+#stopView .search-btn {
+    height: 35px;          /* match select height */
+    font-size: 16px;
+    padding: 0 20px;
+}
+#stopView .search-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+@media(max-width:600px){
+
+.search-box {
+grid-template-columns: 1fr;  
+}
+
+.search-btn {
+width: 100%;
+}
+
+.container {
+padding: 10px;
+margin: 10px;
+}
+
+.student-card {
+flex-direction: column;
+align-items: flex-start;
+gap: 8px;
+}
+
+.student-actions {
+width: 100%;
+justify-content: space-between;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <i class="fa fa-arrow-left menu-icon" onclick="goBack()"></i>
+    <i class="fa fa-bars menu-icon" onclick="toggleMenu()"></i>Bus Management
+</div>
+
+<div class="sidebar" id="sidebar">
+<a href="#" onclick="showSection('attendance')">📝Take Attendance</a>
+<a href="#" onclick="showSection('dashboard')">📊Attendance Dashboard</a>
+<a href="#" onclick="showSection('stopView')">📍Stop Wise View</a>
+</div>
+
+<div class="container">
+
+<div id="attendance">
+
+<div class="search-box">
+    <select id="route">
+        <option value="">Select Route</option>
+        <option value="Kayalpatnam">Kayalpatnam</option>
+        <option value="Sawyerpuram">Sawyerpuram</option>
+        <option value="Udangudi">Udangudi</option>
+        <option value="Navaladi">Navaladi</option>
+        <option value="Ittamozhi">Ittamozhi</option>
+        <option value="Tirunelveli">Tirunelveli</option>
+        <option value="Patemanagram">Patemanagram</option>
+        <option value="Spic Route - Thoothukudi">Spic Route - Thoothukudi</option>
+        <option value="Thoothukudi">Thoothukudi</option>
+    </select>
+<input type="date" id="date">
+<select id="section">
+<option value="AM">AM</option>
+<option value="PM">PM</option>
+</select>
+<button class="search-btn" onclick="loadStudents()">Search</button>
+</div>
+
+<div id="list"></div>
+
+<button class="submit-btn" id="submitBtn" onclick="saveAttendance()">Submit</button>
+
+</div>
+
+<div id="dashboard" style="display:none;">
+
+    <div class="search-box">
+        <select id="route2">
+            <option value="">Select Route</option>
+            <option value="Kayalpatnam">Kayalpatnam</option>
+            <option value="Sawyerpuram">Sawyerpuram</option>
+            <option value="Udangudi">Udangudi</option>
+            <option value="Navaladi">Navaladi</option>
+            <option value="Ittamozhi">Ittamozhi</option>
+            <option value="Tirunelveli">Tirunelveli</option>
+            <option value="Patemanagram">Patemanagram</option>
+            <option value="Spic Route - Thoothukudi">Spic Route - Thoothukudi</option>
+            <option value="Thoothukudi">Thoothukudi</option>
+        </select>
+        <input type="date" id="date2">
+        <select id="section2">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+        </select>
+        <button class="search-btn" onclick="loadAttendance()">Search</button>
+    </div>
+
+    <div class="filter-box">
+        <button class="filter-btn present-btn" onclick="showPresent()">Present</button>
+        <button class="filter-btn absent-btn" onclick="showAbsent()">Absent</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+<div id="stopView" style="display:none;">
+    <div class="search-box">
+        <select id="stopSelect" class="stop-select" onchange="loadStopStudents()">
+            <option value="">Select Stop</option>
+            <!--Route 2-->
+            <option value="SRS Garden">SRS Garden</option>
+            <option value="Lakshmi">Lakshmi</option>
+            <option value="Peyanvilai">Peyanvilai</option>
+            <option value="Kayalpatnam">Kayalpatnam</option>
+            <option value="Annam Hospital">Annam Hospital</option>
+            <option value="TCR GH">TCR GH</option>
+            <option value="CSE TCR">CSE TCR</option>
+            <option value="Indian Bank TCR">Indian Bank TCR</option>
+            <option value="Kumarapuram">Kumarapuram</option>
+            <option value="Veera Pandiyapattinam">Veera Pandiyapattinam</option>
+            <option value="Arumuganeri Bus Stop">Arumuganeri Bus Stop</option>
+            <option value="Aditanar College">Aditanar College</option>
+            <!--Route 5-->
+            <option value="Sivathaiyapuram">Sivathaiyapuram</option>
+            <option value="Sawyerpuram">Sawyerpuram</option>
+            <option value="Subramaniyapuram">Subramaniyapuram</option>
+            <option value="Panaivilai">Panaivilai</option>
+            <option value="Eral">Eral</option>
+            <option value="Umarikadu">Umarikadu</option>
+            <option value="Arumuga Railway Gate">Arumuga Railway Gate</option>
+            <option value="Amman Kovil">Amman Kovil</option>
+            <option value="Arumuganeri">Arumuganeri</option>
+            <option value="Adaikalapuram">Adaikalapuram</option>
+            <option value="Ranimaharajapuram">Ranimaharajapuram</option>
+            <option value="Aladiyur">Aladiyur</option>
+            <!-- Route 6 -->
+            <option value="Siru Nadarkudiyiruppu">Siru Nadarkudiyiruppu</option>
+            <option value="Nesapuram">Nesapuram</option>
+            <option value="Udangudi">Udangudi</option>
+            <option value="Vellalanvilai">Vellalanvilai</option>
+            <!-- Route 7 -->
+            <option value="Navaladi">Navaladi</option>
+            <option value="Thisaiyanvilai">Thisaiyanvilai</option>
+            <option value="Idaichivilai">Idaichivilai</option>
+            <option value="Tattarmadam">Tattarmadam</option>
+            <option value="Valathur">Valathur</option>
+            <option value="Mudhaloor">Mudhaloor</option>
+            <option value="Kulasai">Kulasai</option>
+            <option value="Tiruchendur">Tiruchendur</option>
+            <!-- Route 8 -->
+            <option value="Ittamozhi">Ittamozhi</option>
+            <option value="Sathankulam">Sathankulam</option>
+            <option value="Pannamparai">Pannamparai</option>
+            <option value="Meignanapuram">Meignanapuram</option>
+            <option value="Maruthur Karai">Maruthur Karai</option>
+            <option value="Paramankurichi">Paramankurichi</option>
+            <option value="Kayamozhi">Kayamozhi</option>
+            <!-- Route 9 -->
+            <option value="Kodeeswaran Nagar">Kodeeswaran Nagar</option>
+            <option value="Tirunelveli Town">Tirunelveli Town</option>
+            <option value="Tirunelveli">Tirunelveli</option>
+            <option value="Reliance Bulk">Reliance Bulk</option>
+            <option value="Tachanallur">Tachanallur</option>
+            <option value="Vannarpetai">Vannarpetai</option>
+            <option value="Kurichi">Kurichi</option>
+            <option value="Palai Bus Stand">Palai Bus Stand</option>
+            <option value="Samathanapuram">Samathanapuram</option>
+            <option value="Lakshmi Mahal">Lakshmi Mahal</option>
+            <option value="Vm Chattram">Vm Chattram</option>
+            <option value="Sp Office">Sp Office</option>
+            <option value="Krishnapuram">Krishnapuram</option>
+            <option value="Seiydunganallur">Seiydunganallur</option>
+            <option value="Adhichanallur">Adhichanallur</option>
+
+
+
+
+    </select>
+    
+    <button class="search-btn" onclick="loadStopStudents()">Search</button>
+    </div>
+    
+    <div id="stopResult"></div>
+</div>
+
+</div>
+
+<script>
+
+let studentsData = [];
+let attendanceStatus = {};
+let presentData = [];
+let absentData = [];
+
+document.getElementById("date").value =
+new Date().toISOString().split("T")[0];
+
+document.getElementById("date2").value =
+new Date().toISOString().split("T")[0];
+
+
+function goBack(){
+ if(document.referrer){
+ window.location.href = document.referrer;
+ } else {
+ const role = sessionStorage.getItem("role");
+ if(role === "admin"){
+ window.location.href = "admin.html";
+ } else {
+ window.location.href = "staff.html";
+ }
+ }
+}
+
+
+function toggleMenu(){
+    let s = document.getElementById("sidebar");
+
+    if(s.style.left === "0px"){
+        s.style.left = "-100%";
+    } else {
+        s.style.left = "0px";
+    }
+}
+
+function showSection(sec){
+    document.getElementById("attendance").style.display = "none";
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("stopView").style.display = "none";
+    document.getElementById(sec).style.display = "block";
+    document.getElementById("list").innerHTML = "";
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("stopResult").innerHTML = "";
+    document.getElementById("submitBtn").style.display = "none";
+    document.getElementById("stopSelect").value = "";
+
+toggleMenu();
+}
+async function loadStudents(){
+const route = document.getElementById("route").value;
+if(!route){ alert("Select Route"); return; }
+const res = await fetch(`http://localhost:4000/getStudentsByRoute?route=${route}`);
+const data = await res.json();
+
+studentsData = data;
+attendanceStatus = {};
+
+let html = "";
+
+data.forEach(s => {
+    attendanceStatus[s.id] = "Present"; 
+    html += `
+    <div class="student-card">
+    <div class="student-info">
+    <b>${s.name}</b><br>
+    <small>${s.stop_name} | ${s.year}</small>
+    </div>
+
+    <div class="student-actions">
+    <button id="p${s.id}" class="status-btn present-btn"
+    onclick="markPresent(${s.id})">Present</button>
+
+    <button id="a${s.id}" class="status-btn absent-btn"
+    onclick="markAbsent(${s.id})">Absent</button>
+    </div>
+    </div>
+    `;
+});
+
+document.getElementById("list").innerHTML = html;
+document.getElementById("submitBtn").style.display = "block";
+}
+
+
+function markPresent(id){
+attendanceStatus[id] = "Present";
+document.getElementById("p"+id).classList.add("dim");
+document.getElementById("a"+id).classList.remove("dim");
+}
+
+function markAbsent(id){
+attendanceStatus[id] = "Absent";
+document.getElementById("a"+id).classList.add("dim");
+document.getElementById("p"+id).classList.remove("dim");
+}
+
+async function saveAttendance(){
+
+const btn = document.getElementById("submitBtn");
+btn.disabled = true;
+const route = document.getElementById("route").value;
+const date = document.getElementById("date").value;
+const section = document.getElementById("section").value;
+
+const updated = studentsData.map(s => ({
+id: s.id,
+status: attendanceStatus[s.id] || "Present"
+}));
+
+try {
+
+const res = await fetch("http://localhost:4000/saveAttendance", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ route_name: route, date, section, students: updated })
+});
+
+const data = await res.json();
+
+alert(data.message);
+
+} catch(err){
+console.error(err);
+alert("Error saving attendance");
+}
+
+btn.disabled = false;
+}
+
+async function loadAttendance(){
+
+const route = document.getElementById("route2").value;
+const date = document.getElementById("date2").value;
+const section = document.getElementById("section2").value;
+
+const res = await fetch(
+`http://localhost:4000/getAttendanceByRoute?route=${route}&date=${date}&section=${section}`
+);
+
+const data = await res.json();
+
+presentData = data.present || [];
+absentData = data.absent || [];
+
+document.getElementById("result").innerHTML =
+"Click Present / Absent";
+}
+
+function showPresent(){
+let html = `<div class="box"><b>Present (${presentData.length})</b>`;
+presentData.forEach(s => {
+html += `<div class="student">${s.name}</div>`;
+});
+html += "</div>";
+document.getElementById("result").innerHTML = html;
+}
+
+function showAbsent(){
+let html = `<div class="box"><b>Absent (${absentData.length})</b>`;
+absentData.forEach(s => {
+html += `<div class="student">${s.name}</div>`;
+});
+html += "</div>";
+document.getElementById("result").innerHTML = html;
+}
+
+async function loadStopStudents(){
+
+const stop = document.getElementById("stopSelect").value;
+
+if(!stop){
+alert("Select Stop");
+return;
+}
+
+const res = await fetch(`http://localhost:4000/getStudentsByStop?stop=${stop}`);
+const data = await res.json();
+
+let html = `<div class="box">
+<b>Total Students: ${data.length}</b>`;
+
+data.forEach(s => {
+html += `
+<div class="student">
+<b>${s.name}</b><br>
+<small>Year: ${s.year}</small><br>
+<small>Route: ${s.route_name}</small>
+</div>
+`;
+});
+
+html += "</div>";
+
+document.getElementById("stopResult").innerHTML = html;
+}
+</script>
+
+</body>
+</html>

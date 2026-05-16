@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bus Management System</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: white;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            padding: 8px 15px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background: rgb(218, 91, 91);
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        .dashboard-container {
+            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap; 
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            color: black;
+            width: 250px;
+            padding: 30px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .card:hover {
+            transform: scale(1.05);
+            background: #f1f1f1;
+        }
+        .card h2 {
+            margin-bottom: 10px;
+        }
+        .card p {
+            font-size: 14px;
+        }
+        @media (max-width: 900px) {
+            .card {
+                width: 45%;
+            }
+        }
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 20px;
+                margin-top: 60px;
+            }
+            .logout-btn {
+                top: 10px;
+                right: 15px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            .card {
+                width: 100%;
+                padding: 20px;
+            }
+            .dashboard-container {
+                gap: 20px;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <h1>Bus Certificate & Expense Management</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+        <div class="dashboard-container">
+            <div class="card" onclick="goToBus()">
+                <h2>🚌<br>Bus Dashboard</h2>
+                <p>Manage Bus Certificates & Expiry Details</p>
+            </div>
+            <div class="card" onclick="goToExpense()">
+                <h2>💰<br>Expense Dashboard</h2>
+                <p>Manage Repair & Fuel Expenses</p>
+            </div>
+            <div class="card" onclick="goToReport()">
+                <h2>📆<br>Monthly Report</h2>
+                <p>Check Monthly Income & Expense Details</p>
+            </div>
+            <div class="card" onclick="goToAttendance()">
+                <h2>📋<br>Bus Attendance</h2>
+                <p>Take attendance & view by stop</p>
+            </div>
+            <div class="card" onclick="goToAddStudent()">
+                <h2>🎓<br>Add Students</h2>
+                <p>Add bus students</p>
+            </div>
+            <div class="card" onclick="goToEditStudent()">
+                <h2>👨‍🎓<br>Manage Students</h2>
+                <p>Edit or delete student details</p>
+            </div>
+        </div>
+        <script>
+        function goToBus() {
+            window.location.href = "bus.html"; 
+        }
+        function goToExpense() {
+            window.location.href = "expense.html";
+        }
+        function goToReport() {
+            window.location.href = "monthly.html";
+        }
+        function goToAttendance() {
+            window.location.href = "attendance.html";
+        }
+        function goToAddStudent() {
+            window.location.href = "addStudent.html";
+        }
+        function goToEditStudent(){
+            window.location.href = "editStudent.html"; 
+        }
+        function logout(){
+            sessionStorage.clear();
+            window.location.replace("login.html");
+        }
+        </script>
+    </body>
+</html>
